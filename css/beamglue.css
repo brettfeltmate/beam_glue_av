@@ -1,0 +1,60 @@
+body {
+  background-color: #2d2d30;
+  color: white;
+  font-size: 20pt;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 50px 40px 50px;
+  grid-template-rows: 50px;
+  grid-template-areas: "left centre right";
+  justify-content: center;
+  align-content: center;
+}
+
+.face {
+  display: flex;
+  grid-area: centre;
+  width: 50px;
+  aspect-ratio: 1/1;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.face.fixation {
+  z-index: 1;
+  background-image: url("../images/neutral-face.png");
+}
+.face.cue {
+  z-index: 0;
+}
+.face.cue.left {
+  background-image: url("../images/left-face.png");
+}
+.face.cue.right {
+  background-image: url("../images/right-face.png");
+}
+
+.target {
+  display: flex;
+  place-content: center;
+  place-self: center;
+  align-items: center;
+  text-align: center;
+  width: 20px;
+  aspect-ratio: 1/1;
+  color: #2d2d30;
+  font-size: 20px;
+}
+.target.left {
+  grid-area: left;
+}
+.target.right {
+  grid-area: right;
+}
+.target.visible {
+  color: white;
+}
+
+/*# sourceMappingURL=beamglue.css.map */

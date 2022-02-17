@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beam Glue: AV</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+
+    <script src="js/jspsych.js"></script>
+
+    <script src = '../lib/DVA_Manager.js'></script>
+    <script src = 'js/KLect.js'></script>
+    <script src = 'js/utilities.js'></script>
+
+    <script src="js/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="js/plugins/jspsych-survey-text.js"></script>
+    <script src="js/plugins/jspsych-fullscreen.js"></script>
+    <script src="js/plugins/jspsych-instructions.js"></script>
+    <script src="js/plugins/trial.js"></script>
+
+    <script src="js/config/trial_params.js"></script>
+    <script src="js/config/factor_trials.js"></script>
+    <link href="css/jspsych.css" rel="stylesheet" type="text/css">
+    <link href="css/beamglue.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<script>
+    function get_instructions(target) {
+        let distractor = (target === 'A') ? 'V' : 'A'
+
+        let text =
+            `On each trial you will be shown a letter.<br>` +
+            `If that letter is ${target}, press the ${target_keys[0]} key.` +
+            `If that letter is ${distractor}, press the ${target_keys[1]} key.<br>` +
+            `To start each trial, look at the face and press the ${init_key} key.<br><br>` +
+            `Please try to respond as <strong>quickly</strong> and <strong>accurately</strong> as possible.<br>` +
+            `You will hear a tone if you make a mistake. Please ensure your volume is up.<br><br>` +
+            `Press the spacebar to begin.`
+
+        return text
+    }
+
+    // // spawn DVA manager to handle screen calibration
+    let dva_mgr = new DVAManager();
+    dva_mgr.one_dva = 25; // arbitrary, rescaled at run time
+
+    let data_repo = [];
+    let user = {
+        id: null,
+        age: null,
+        sex: null,
+        hand: null
+    };
+
+
+    let error_tone = new Audio('aud/error_beep.mp3')
+
+    let trial = {
+        type: 'trial',
+        init_key: init_key,
+        response_keys: target_keys,
+        cue_type: jsPsych.timelineVariable('cue_type'),
+        stim_presented: jsPsych.timelineVariable('stim_presented'),
+        target_loc: jsPsych.timelineVariable('target_loc'),
+        coa: jsPsych.timelineVariable('coa'),
+        ctoa: jsPsych.timelineVariable('ctoa'),
+        target_duration: jsPsych.timelineVariable('target_duration')
+    }
+
+    // generate event objects
+    let fullscreen_on = {type: 'fullscreen', fullscreen_mode: true}
+    let fullscreen_off = {type: 'fullscreen', fullscreen_mode: false}
+
+    let collect_demographics = {
+        type: 'survey-text',
+        questions: [
+            {name: 'id', prompt: 'Please enter the ID code provided to you.'},
+            {name: 'age', prompt: 'Please enter your age.'},
+            {name: 'sex', prompt: 'Please enter your sex (male, female, non-binary).'},
+            {name: 'hand', prompt: 'Please enter your handedness (right, left, ambidextrous)'}
+        ],
+        on_finish: function() {
+            let ind = jsPsych.data.get().count()-1;
+            user.id = get_demographic(ind, 'id');
+            user.age = get_demographic(ind, 'age');
+            user.sex = get_demographic(ind, 'sex');
+            user.hand = get_demographic(ind, 'hand');
+        }
+    }
+
+    let first_task_instructions = {
+        type: 'html-keyboard-response',
+        stimulus: get_instructions(target_cond[0]),
+        choices: ['spacebar'],
+        on_finish: function() {
+            document.documentElement.style.cursor = 'none';
+        }
+    }
+
+    let first_cond = {
+        timeline: [trial],
+        timeline_variables: factor_trials(target_cond[0])
+    }
+
+    let halfway = {
+        type: 'html-keyboard-response',
+        stimulus: `You are 1/2 the way through the study.<br>Your goal will now change slightly.<br>Press the spacebar when you are ready to resume.`,
+        choices: ['spacebar']
+    }
+
+    let second_task_instructions = {
+        type: 'html-keyboard-response',
+        stimulus: get_instructions(target_cond[1]),
+        choices: ['spacebar'],
+    }
+
+    let second_cond = {
+        timeline: [trial],
+        timeline_variables: factor_trials(target_cond[1])
+    }
+
+    let end_screen = {
+        type: 'html-keyboard-response',
+        stimulus:
+            `You have completed the experiment.<br>` +
+            `Press any key now to exit fullscreen.<br>` +
+            `Please wait a moment before closing this window to ensure your data was uploaded.`,
+        choices: jsPsych.ALL_KEYS
+    }
+
+    let timeline = [
+        fullscreen_on,
+        collect_demographics,
+        first_task_instructions,
+        first_cond,
+        halfway,
+        second_task_instructions,
+        second_cond,
+        end_screen,
+        fullscreen_off
+    ]
+
+    dva_mgr.launch = function() {
+        jsPsych.init(
+            {
+                timeline: timeline,
+                on_finish: function() {
+                    document.documentElement.style.cursor = 'auto';
+                    data_repo.forEach(function(row) {
+                        row.pid = user.id;
+                        row.age = user.age;
+                        row.sex = user.sex;
+                        row.hand = user.hand;
+                    })
+                    KLect.send('klein', 'nick_murray', 'beam_glue_av', 'nmurray@dal.ca', '../..', data_repo)
+                }
+            }
+        )
+   }
+
+   dva_mgr.init();
+
+
+</script>
+
+</body>
+</html>
