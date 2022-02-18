@@ -131,17 +131,12 @@ jsPsych.plugins["trial"] = (function () {
         let key = jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(response.key)
         let correct;
 
-        console.log(`Key pressed: ${key}`)
         // determine if correct response made
         if (plugin.params.stim_presented === plugin.params.target_letter) {
-            console.log("Target presented")
-
             correct = (key === plugin.params.response_keys[0]) ? 1 : 0
         } else {
             correct = (key === plugin.params.response_keys[1]) ? 1 : 0
         }
-
-        console.log(`Correct? ${correct === 1}`)
 
         // aggregate trial data & log
         let trial_data = {
