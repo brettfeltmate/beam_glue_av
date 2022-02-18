@@ -3,7 +3,7 @@ const ctoa = 400;
 const target_duration = 80;
 
 const cue_type = ['left', 'right'];
-const target_loc = ['left', 'right'];
+const stim_loc = ['left', 'right'];
 
 const target_cond = (Math.random() >= 0.5) ? ['A', 'V'] : ['V', 'A'];
 const stims = {

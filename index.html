@@ -32,9 +32,9 @@
 
         let text =
             `On each trial you will be shown a letter.<br>` +
-            `If that letter is ${target}, press the ${target_keys[0]} key.` +
-            `If that letter is ${distractor}, press the ${target_keys[1]} key.<br>` +
-            `To start each trial, look at the face and press the ${init_key} key.<br><br>` +
+            `If that letter is <strong>${target}</strong>, press the <strong>${target_keys[0]}</strong> key.<br>` +
+            `If that letter is <strong>${distractor}</strong>, press the <strong>${target_keys[1]}</strong> key.<br>` +
+            `To start each trial, look at the face and press the <strong>${init_key}</strong> key.<br><br>` +
             `Please try to respond as <strong>quickly</strong> and <strong>accurately</strong> as possible.<br>` +
             `You will hear a tone if you make a mistake. Please ensure your volume is up.<br><br>` +
             `Press the spacebar to begin.`
@@ -62,8 +62,9 @@
         init_key: init_key,
         response_keys: target_keys,
         cue_type: jsPsych.timelineVariable('cue_type'),
+        target_letter: jsPsych.timelineVariable('target_letter'),
         stim_presented: jsPsych.timelineVariable('stim_presented'),
-        target_loc: jsPsych.timelineVariable('target_loc'),
+        stim_loc: jsPsych.timelineVariable('stim_loc'),
         coa: jsPsych.timelineVariable('coa'),
         ctoa: jsPsych.timelineVariable('ctoa'),
         target_duration: jsPsych.timelineVariable('target_duration')
