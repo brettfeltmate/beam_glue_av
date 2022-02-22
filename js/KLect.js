@@ -143,7 +143,7 @@ KLect.uuid = function (){
 KLect.fail = function() {
 	/* if anything but the word "success" is returned by the server, we assume a failure; so we instead
 	   print the participant's data to the screen and ask the participant to email it to the researcher */
-	let fail_txt = `Uh oh, something has gone wrong delivering your data to the server. Please copy everything below and send it to the following e-mail address:<br /> <a href='mailto: ${KLect.email}'>${KLect.email}</a>:`;
+	let fail_txt = `Uh oh, something has gone wrong delivering your data to the server. Please right-click on the page, select 'copy all', and send it to the following e-mail address:<br /> <a href='mailto: ${KLect.email}'>${KLect.email}</a>:`;
 	$("#KLect-message").append(
 		$("<div />").append([
 			$("<p />").html(fail_txt),
